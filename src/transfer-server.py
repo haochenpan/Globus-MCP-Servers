@@ -381,7 +381,7 @@ async def list_directory(endpoint_id: str, path: str = "/") -> str:
 
         # Sort: directories first, then files
         items = sorted(
-            response.data, key=lambda x: (x["type"] != "dir", x["name"].lower())
+            response.data['DATA'], key=lambda x: (x["type"] != "dir", x["name"].lower())
         )
 
         for item in items[:50]:  # Limit to 50 items
@@ -392,8 +392,8 @@ async def list_directory(endpoint_id: str, path: str = "/") -> str:
             )
             result += f"{icon} `{item['name']}`{size}{modified}\n"
 
-        if len(response.data) > 50:
-            result += f"\n... and {len(response.data) - 50} more items."
+        if len(response.data['DATA']) > 50:
+            result += f"\n... and {len(response.data['DATA']) - 50} more items."
 
         return result
 
