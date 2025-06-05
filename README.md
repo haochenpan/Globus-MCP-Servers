@@ -61,14 +61,13 @@ Edit the claude_desktop_config.json file at `~/Library/Application\ Support/Clau
       "args": ["/path/to/Globus-MCP-Servers/src/transfer-server.py"],
       "env": {
         "GLOBUS_CLIENT_ID": "ee05bbfa-2a1a-4659-95df-ed8946e3aae6",
-        "PYTHONPATH": "</path/to/conda/>globus-mcp/bin",
+        "PATH": "<put your full path here, you can get it with `echo $PATH`",
       }
     }
   }
 }
 ```
 
-> **_NOTE:_**  I had to add my full "PATH" as an env too.
 
 Ensure the python path is correctly set and then restart Claude desktop.
 
@@ -85,7 +84,7 @@ Edit the claude_desktop_config.json file at `~/Library/Application\ Support/Clau
       "args": ["/path/to/Globus-MCP-Servers/src/compute-server.py"],
       "env": {
         "GLOBUS_CLIENT_ID": "ee05bbfa-2a1a-4659-95df-ed8946e3aae6",
-        "PYTHONPATH": "</path/to/conda/>globus-mcp/bin",
+        "PATH": "<put your full path here, you can get it with `echo $PATH`",
       }
     }
   }
