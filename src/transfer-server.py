@@ -259,7 +259,7 @@ async def list_endpoints(filter_name: str = "") -> str:
             return "No endpoints found matching your criteria."
 
         result = "📡 **Available Endpoints:**\n\n"
-        for ep in endpoints.data[:10]:  # Limit to first 10 results
+        for ep in endpoints.data['DATA'][:10]:  # Limit to first 10 results
             result += f"**{ep['display_name']}**\n"
             result += f"   📋 ID: `{ep['id']}`\n"
             result += f"   👤 Owner: {ep['owner_string']}\n"
@@ -267,8 +267,8 @@ async def list_endpoints(filter_name: str = "") -> str:
             result += f"   🔌 Type: {ep.get('entity_type', 'Unknown')}\n"
             result += "-" * 60 + "\n"
 
-        if len(endpoints.data) > 10:
-            result += f"\n... and {len(endpoints.data) - 10} more endpoints. Use filter_name to narrow results."
+        if len(endpoints.data['DATA']) > 10:
+            result += f"\n... and {len(endpoints.data['DATA']) - 10} more endpoints. Use filter_name to narrow results."
 
         return result
 
