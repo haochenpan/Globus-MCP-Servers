@@ -170,8 +170,6 @@ async def compute_authenticate() -> str:
         return "Please set GLOBUS_CLIENT_ID environment variable"
 
     try:
-        ComputeScopes = ComputeScopeBuilder()
-
         auth_client = globus_sdk.NativeAppAuthClient(CLIENT_ID)
         auth_client.oauth2_start_flow(
             requested_scopes=[
@@ -203,7 +201,7 @@ async def complete_compute_auth(auth_code: str) -> str:
 
     try:
         token_response = auth_client.oauth2_exchange_code_for_tokens(auth_code)
-        print(token_response)
+
         ComputeScopes = ComputeScopeBuilder()
 
         compute_auth = globus_sdk.AccessTokenAuthorizer(
@@ -272,10 +270,7 @@ Code:
 
 
 async def execute_function(
-    function_name: str,
-    endpoint_id: str,
-    function_args: List = None,
-    function_kwargs: Dict = None,
+    function_name: str, endpoint_id: str, function_args: tuple, function_kwargs: Dict,
 ) -> str:
     """Execute a function"""
     if not compute_client:
@@ -286,11 +281,12 @@ async def execute_function(
 
     try:
         func_uuid = registered_functions[function_name]
-        args = function_args or []
-        kwargs = function_kwargs or {}
 
         task_id = compute_client.run(
-            function_id=func_uuid, endpoint_id=endpoint_id, args=args, kwargs=kwargs
+            *function_args,
+            function_id=func_uuid,
+            endpoint_id=endpoint_id,
+            **function_kwargs,
         )
 
         return f"""Function execution submitted!
@@ -298,8 +294,8 @@ async def execute_function(
 Function: {function_name}
 Endpoint: {endpoint_id}
 Task ID: {task_id}
-Arguments: {args}
-Kwargs: {kwargs}
+Arguments: {function_args}
+Kwargs: {function_kwargs}
 
 Use check_task_status to monitor progress."""
 
