@@ -1,4 +1,0 @@
-mcp
-globus-sdk
-asyncio
-globus-compute-sdk
