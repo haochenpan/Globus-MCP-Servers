@@ -1,0 +1,146 @@
+# Science MCPs
+
+A collection of Model Context Protocol (MCP) servers that enable Claude and other AI assistants to interact with scientific computing resources and data management services.
+
+## Overview
+
+This repository contains MCP servers that allow AI assistants to interact with scientific computing infrastructure:
+
+1. **Globus MCP Servers** - Enable interaction with Globus services for data transfer and compute functions
+2. **Compute Facility MCP Servers** - Enable interaction with ALCF and NERSC supercomputing facilities
+
+These servers implement the [Model Context Protocol (MCP)](https://github.com/anthropics/anthropic-cookbook/tree/main/mcp), which allows AI assistants like Claude to interact with external tools and services.
+
+## Components
+
+### Globus MCP Servers
+
+The Globus MCP servers enable AI assistants to:
+
+- **Globus Transfer** - Transfer files between Globus endpoints, browse directories, and manage transfer tasks
+- **Globus Compute** - Register and execute Python functions on remote Globus Compute endpoints (formerly FuncX)
+
+[Learn more about Globus MCP Servers](mcps/globus/README.md)
+
+### Compute Facility MCP Servers
+
+The Compute Facility MCP servers enable AI assistants to:
+
+- **ALCF** - Check status of ALCF machines (e.g., Polaris) and monitor running jobs
+- **NERSC** - Check status of NERSC systems and services
+
+[Learn more about Compute Facility MCP Servers](mcps/compute-facilities/READEME.md)
+
+## Prerequisites
+
+- Python 3.11
+- Claude Desktop application
+- For Globus servers: A Globus account and Client ID
+
+## Installation
+
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/globus-labs/science-mcps
+   cd science-mcps
+   ```
+
+2. Create a conda environment:
+   ```bash
+   conda create -n science-mcps python=3.11
+   conda activate science-mcps
+   ```
+
+3. Install the required dependencies for the specific MCP server you want to use:
+   ```bash
+   # For Globus servers
+   pip install -r mcps/globus/requirements.txt
+   
+   # For Compute Facility servers
+   pip install -r mcps/compute-facilities/requirements.txt
+   ```
+
+## Setting up MCP Servers in Claude Desktop
+
+To add these MCP servers to Claude Desktop:
+
+1. Open Claude Desktop
+2. Go to Settings (gear icon)
+3. Navigate to the "MCP Servers" section
+4. Click "Add Server"
+5. Configure each server as needed
+
+For detailed configuration instructions, see the README files for each component:
+- [Globus MCP Servers Setup](mcps/globus/README.md#setting-up-mcp-servers-in-claude-desktop)
+- [Compute Facility MCP Servers Setup](mcps/compute-facilities/READEME.md#setting-up-mcp-servers-in-claude-desktop)
+
+## Usage Examples
+
+### Globus Transfer
+
+You can ask Claude to:
+```
+Transfer files from my Globus endpoint to another endpoint
+```
+
+### Globus Compute
+
+You can ask Claude to:
+```
+Run a Python function on a Globus Compute endpoint
+```
+
+### ALCF Status
+
+You can ask Claude to:
+```
+Check if Polaris is online
+```
+
+### NERSC Status
+
+You can ask Claude to:
+```
+Check the status of NERSC systems
+```
+
+## Available Tools
+
+### Globus Transfer Server Tools
+- `globus_authenticate` - Start Globus authentication
+- `complete_globus_auth` - Complete authentication with an auth code
+- `list_endpoints` - List available Globus endpoints
+- `submit_transfer` - Submit a file transfer between endpoints
+- And more...
+
+### Globus Compute Server Tools
+- `compute_authenticate` - Start Globus Compute authentication
+- `register_function` - Register a Python function with Globus Compute
+- `execute_function` - Run a registered function on an endpoint
+- And more...
+
+### ALCF Server Tools
+- `check_alcf_status` - Get the status of the Polaris machine
+- `get_running_jobs` - Return the list of running jobs
+- `system_health_summary` - Summarize the jobs submitted to Polaris
+
+### NERSC Server Tools
+- `get_nersc_status` - Get the status of various NERSC services
+- `check_system_availability` - Check the system's current availability
+- `get_maintenance_info` - Check the maintenance schedule of the resources
+
+For a complete list of tools, see the README files for each component.
+
+## Troubleshooting
+
+- **Connection Problems**: Check that you have network access to the required services
+- **Permission Errors**: Verify you have the necessary permissions for the endpoints you're trying to access
+- **Server Not Found**: Ensure the path to the Python scripts in Claude Desktop configuration is correct
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.

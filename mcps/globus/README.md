@@ -4,7 +4,7 @@ This repository contains Model Context Protocol (MCP) servers that enable Claude
 
 ## Overview
 
-The repository provides two MCP servers:
+The repository provides two Globus MCP servers:
 
 1. **Globus Compute MCP Server** - Enables AI assistants to register and execute Python functions on remote Globus Compute endpoints (formerly FuncX).
 
@@ -24,19 +24,19 @@ These servers implement the [Model Context Protocol (MCP)](https://github.com/an
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/globus-labs/Globus-MCP-Servers
-   cd Globus-MCP-Servers
+   git clone https://github.com/globus-labs/science-mcps
+   cd science-mcps/mcps/globus
    ```
 
 2. Create a conda environment:
    ```bash
-   conda create -n globus-mcp python=3.11
-   conda activate globus-mcp
+   conda create -n science-mcps python=3.11
+   conda activate science-mcps
    ```
 
 3. Install the required dependencies:
    ```bash
-   pip install -r src/requirements.txt
+   pip install -r requirements.txt
    ```
 
 ## Setting up MCP Servers in Claude Desktop
@@ -57,11 +57,10 @@ Edit the claude_desktop_config.json file at `~/Library/Application\ Support/Clau
 {
   "mcpServers": {
     "globus-compute-mcp": {
-      "command": "python",
-      "args": ["/path/to/Globus-MCP-Servers/src/compute-server.py"],
+      "command": "/path/to/your/env/python",
+      "args": ["/path/to/science-mcps/mcps/globus/compute_server.py"],
       "env": {
         "GLOBUS_CLIENT_ID": "ee05bbfa-2a1a-4659-95df-ed8946e3aae6",
-        "PATH": "<put your full path here, you can get it with `echo $PATH`"
       }
     }
   }
@@ -80,11 +79,10 @@ Edit the claude_desktop_config.json file at `~/Library/Application\ Support/Clau
   "mcpServers": {
     ...,
     "globus-transfer-mcp": {
-      "command": "python",
-      "args": ["/path/to/Globus-MCP-Servers/src/transfer-server.py"],
+      "command": "/path/to/your/env/python",
+      "args": ["/path/to/science-mcps/mcps/globus/transfer_server.py"],
       "env": {
         "GLOBUS_CLIENT_ID": "ee05bbfa-2a1a-4659-95df-ed8946e3aae6",
-        "PATH": "<put your full path here, you can get it with `echo $PATH`"
       }
     }
   }
@@ -154,7 +152,7 @@ Claude will help you:
 
 ## License
 
-See the [LICENSE](LICENSE) file for details.
+See the [LICENSE](../../LICENSE) file for details.
 
 ## Contributing
 
