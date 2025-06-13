@@ -4,7 +4,7 @@ import functools
 import logging
 import os
 import uuid
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 import globus_sdk
 from diaspora_event_sdk import Client as DiasporaClient

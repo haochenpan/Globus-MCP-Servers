@@ -7,7 +7,7 @@ A lightweight [FastMCP](https://gofastmcp.com) server that lets Claude (or any M
 | Category | Tools |
 |----------|-------|
 | **Auth** | `start_diaspora_login`, `finish_diaspora_login`, `logout` |
-| **Credentials** | `create_key` (rotates MSK IAM secret) |
+| **Credentials** | `create_key` |
 | **Topics** | `list_topics`, `register_topic`, `unregister_topic` |
 | **Data plane** | `publish_event`, `consume_latest_event` |
 
@@ -83,7 +83,7 @@ Claude’s typical workflow:
 * `diaspora_authenticate`	Start the Globus Native-App login flow
 * `complete_diaspora_auth`	Exchange the auth code for refresh tokens
 * `logout`	Revoke stored tokens and clear cached clients
-* `create_key`	Rotate the MSK SCRAM secret for the current user
+* `create_key`	Create or rotate the MSK IAM secret for the current user
 * `list_topics`	List all topics owned by the caller
 * `register_topic`	Create a new Kafka topic under the caller’s namespace
 * `unregister_topic`	Delete an existing topic

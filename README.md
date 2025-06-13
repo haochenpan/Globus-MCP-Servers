@@ -41,7 +41,6 @@ The Diaspora MCP server enable AI assistants to:
 
 [Learn more about the Diaspora MCP Server](mcps/diaspora/README.md)
 
-
 ## Prerequisites
 
 - Python 3.11
