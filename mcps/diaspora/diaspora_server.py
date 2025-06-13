@@ -14,9 +14,7 @@ from fastmcp import FastMCP
 from globus_sdk.scopes import AuthScopes
 
 log = logging.getLogger(__name__)
-CLIENT_ID = os.getenv(
-    "DIASPORA_GLOBUS_CLIENT_ID", "ee05bbfa-2a1a-4659-95df-ed8946e3aae6"
-)
+CLIENT_ID = os.getenv("GLOBUS_CLIENT_ID", "ee05bbfa-2a1a-4659-95df-ed8946e3aae6")
 
 mcp = FastMCP("Diaspora Octopus Bridge")
 
@@ -90,7 +88,7 @@ def diaspora_authenticate() -> str:
     global _auth_client
 
     if not CLIENT_ID.lower():
-        return "❌ Please set the DIASPORA_GLOBUS_CLIENT_ID environment variable."
+        return "❌ Please set the GLOBUS_CLIENT_ID environment variable."
 
     _auth_client = globus_sdk.NativeAppAuthClient(CLIENT_ID)
     _auth_client.oauth2_start_flow(

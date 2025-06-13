@@ -49,7 +49,7 @@ To add this MCP server to Claude Desktop, edit the claude_desktop_config.json fi
       "command": "/path/to/your/env/python",
       "args": ["/path/to/science-mcps/mcps/diaspora/diaspora_server.py"],
       "env": {
-        "GLOBUS_CLIENT_ID": "ee05bbfa-2a1a-4659-95df-ed8946e3aae6",
+        "GLOBUS_CLIENT_ID": "ee05bbfa-2a1a-4659-95df-ed8946e3aae6"
       }
     }
   }
