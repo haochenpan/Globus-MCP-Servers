@@ -58,8 +58,6 @@ To add this MCP server to Claude Desktop, edit the claude_desktop_config.json fi
 
 Ensure the python path is correctly set and then restart Claude desktop.
 
-
-
 ## Usage
 
 Once the Diaspora MCP server is configured in Claude Desktop, simply ask Claude to perform streaming-related tasks; it will invoke the correct Diaspora tools for you.
@@ -67,7 +65,7 @@ Once the Diaspora MCP server is configured in Claude Desktop, simply ask Claude 
 Ask Claude:
 
 ```bash
-Register a Diaspora topic, send three messages, and return the latest message
+Register a Diaspora topic, produce three messages, and consume the latest message
 ```
 
 Claude’s typical workflow:

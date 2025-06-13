@@ -122,7 +122,7 @@ Check the status of NERSC systems
 
 You can ask Claude to:
 ```
-register a topic, produce three messages, and receive the latest message
+Register a Diaspora topic, produce three messages, and consume the latest message
 ```
 
 ## Available Tools
