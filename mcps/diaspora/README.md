@@ -37,3 +37,57 @@ A lightweight [FastMCP](https://gofastmcp.com) server that lets Claude (or any M
    ```bash
    pip install -r requirements.txt
    ```
+
+## Setting up the MCP Server in Claude Desktop
+
+To add this MCP server to Claude Desktop, edit the claude_desktop_config.json file at `~/Library/Application\ Support/Claude/claude_desktop_config.json`. Make sure you correct the path information:
+
+```json
+{
+  "mcpServers": {
+    "diaspora-mcp": {
+      "command": "/path/to/your/env/python",
+      "args": ["/path/to/science-mcps/mcps/diaspora/diaspora_server.py"],
+      "env": {
+        "GLOBUS_CLIENT_ID": "ee05bbfa-2a1a-4659-95df-ed8946e3aae6",
+      }
+    }
+  }
+}
+```
+
+Ensure the python path is correctly set and then restart Claude desktop.
+
+
+
+## Usage
+
+Once the Diaspora MCP server is configured in Claude Desktop, simply ask Claude to perform streaming-related tasks; it will invoke the correct Diaspora tools for you.
+
+Ask Claude:
+
+```bash
+Register a topic, send three messages, and return the latest message
+```
+
+Claude’s typical workflow:
+1. Authenticate with Globus (diaspora_authenticate → complete_diaspora_auth)
+2. Create MSK credentials (create_key)
+3. Register the topic (register_topic)
+4. Publish three UTF-8 messages (send_event)
+5. Fetch the newest record (consume_latest_event) and display it
+
+
+## Available Tools
+
+* `diaspora_authenticate`	Start the Globus Native-App login flow
+* `complete_diaspora_auth`	Exchange the auth code for refresh tokens
+* `logout`	Revoke stored tokens and clear cached clients
+* `create_key`	Rotate the MSK SCRAM secret for the current user
+* `list_topics`	List all topics owned by the caller
+* `register_topi`c	Create a new Kafka topic under the caller’s namespace
+* `unregister_topic`	Delete an existing topic
+* `send_event`	Publish a UTF-8 message (optionally with key & headers)
+* `consume_latest_event`	Retrieve the most recent message from a topic
+
+These tools cover authentication, credential management, topic administration, and core data-plane operations.
