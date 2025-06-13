@@ -1,0 +1,2 @@
+diaspora-event-sdk[kafka-python]
+fastmcp
