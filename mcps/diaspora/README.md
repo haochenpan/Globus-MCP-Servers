@@ -9,7 +9,7 @@ A lightweight [FastMCP](https://gofastmcp.com) server that lets Claude (or any M
 | **Auth** | `start_diaspora_login`, `finish_diaspora_login`, `logout` |
 | **Credentials** | `create_key` (rotates MSK IAM secret) |
 | **Topics** | `list_topics`, `register_topic`, `unregister_topic` |
-| **Data plane** | `send_event`, `consume_latest_event` |
+| **Data plane** | `publish_event`, `consume_latest_event` |
 
 
 ## Prerequisites
@@ -67,14 +67,14 @@ Once the Diaspora MCP server is configured in Claude Desktop, simply ask Claude 
 Ask Claude:
 
 ```bash
-Register a topic, send three messages, and return the latest message
+Register a Diaspora topic, send three messages, and return the latest message
 ```
 
 Claude’s typical workflow:
 1. Authenticate with Globus (diaspora_authenticate → complete_diaspora_auth)
 2. Create MSK credentials (create_key)
 3. Register the topic (register_topic)
-4. Publish three UTF-8 messages (send_event)
+4. Publish three UTF-8 messages (publish_event)
 5. Fetch the newest record (consume_latest_event) and display it
 
 
@@ -85,9 +85,9 @@ Claude’s typical workflow:
 * `logout`	Revoke stored tokens and clear cached clients
 * `create_key`	Rotate the MSK SCRAM secret for the current user
 * `list_topics`	List all topics owned by the caller
-* `register_topi`c	Create a new Kafka topic under the caller’s namespace
+* `register_topic`	Create a new Kafka topic under the caller’s namespace
 * `unregister_topic`	Delete an existing topic
-* `send_event`	Publish a UTF-8 message (optionally with key & headers)
+* `publish_event`	Publish a UTF-8 message (optionally with key & headers)
 * `consume_latest_event`	Retrieve the most recent message from a topic
 
 These tools cover authentication, credential management, topic administration, and core data-plane operations.

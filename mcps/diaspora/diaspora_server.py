@@ -1,15 +1,17 @@
 """FastMCP server exposing Diaspora Event Fabric via diaspora-event-sdk."""
 
-import os
+import functools
 import logging
+import os
 import uuid
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 import globus_sdk
+from diaspora_event_sdk import Client as DiasporaClient
+from diaspora_event_sdk import KafkaConsumer, KafkaProducer
+from diaspora_event_sdk.sdk.login_manager import DiasporaScopes, LoginManager
 from fastmcp import FastMCP
-from diaspora_event_sdk import Client as DiasporaClient, KafkaProducer, KafkaConsumer
 from globus_sdk.scopes import AuthScopes
-from diaspora_event_sdk.sdk.login_manager import LoginManager, DiasporaScopes
 
 log = logging.getLogger(__name__)
 CLIENT_ID = os.getenv(
@@ -49,6 +51,34 @@ def _get_producer() -> KafkaProducer:
     if _producer is None:
         _producer = KafkaProducer()
     return _producer
+
+
+def require_login(func):
+    """Ensure the caller has completed the Globus login flow."""
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        if not _is_logged_in:  # ← reuse your module-level flag
+            raise RuntimeError(
+                "Please authenticate first via diaspora_authenticate / complete_diaspora_auth"
+            )
+        return func(*args, **kwargs)
+
+    return wrapper
+
+
+def require_rotated_key(func):
+    """Ensure the caller has run create_key() at least once."""
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        if not _have_rotated_key:
+            raise RuntimeError(
+                "Call create_key once before producing/consuming messages"
+            )
+        return func(*args, **kwargs)
+
+    return wrapper
 
 
 # Globus Native-App login flow tools
@@ -113,6 +143,7 @@ def logout() -> str:
 
 
 @mcp.tool
+@require_login
 def create_key() -> str:
     global _have_rotated_key
     result = _get_diaspora().create_key()
@@ -121,32 +152,20 @@ def create_key() -> str:
 
 
 @mcp.tool
+@require_login
 def list_topics() -> list[str]:
-    if not _is_logged_in:
-        raise RuntimeError(
-            "Please authenticate first via diaspora_authenticate / complete_diaspora_auth"
-        )
-
     return _get_diaspora().list_topics()
 
 
 @mcp.tool
+@require_login
 def register_topic(topic: str) -> str:
-    if not _is_logged_in:
-        raise RuntimeError(
-            "Please authenticate first via diaspora_authenticate / complete_diaspora_auth"
-        )
-
     return _get_diaspora().register_topic(topic)
 
 
 @mcp.tool
+@require_login
 def unregister_topic(topic: str) -> str:
-    if not _is_logged_in:
-        raise RuntimeError(
-            "Please authenticate first via diaspora_authenticate / complete_diaspora_auth"
-        )
-
     return _get_diaspora().unregister_topic(topic)
 
 
@@ -154,20 +173,15 @@ def unregister_topic(topic: str) -> str:
 
 
 @mcp.tool
-def send_event(
+@require_login
+@require_rotated_key
+def produce_event(
     topic: str,
     value: str,
     key: str | None = None,
     headers: dict[str, str] | None = None,
     sync: bool = True,
 ) -> str:
-    if not _is_logged_in:
-        raise RuntimeError(
-            "Authenticate first with diaspora_authenticate / complete_diaspora_auth"
-        )
-    if not _have_rotated_key:
-        raise RuntimeError("Call create_key once before producing/consuming messages")
-
     producer = _get_producer()
     future = producer.send(topic, value=value, key=key, headers=headers)
     if sync:
@@ -177,17 +191,12 @@ def send_event(
 
 
 @mcp.tool
+@require_login
+@require_rotated_key
 def consume_latest_event(
     topic: str,
     timeout_s: int = 5,
 ) -> dict[str, Any] | None:
-    if not _is_logged_in:
-        raise RuntimeError(
-            "Authenticate first with diaspora_authenticate / complete_diaspora_auth"
-        )
-    if not _have_rotated_key:
-        raise RuntimeError("Call create_key once before producing/consuming messages")
-
     consumer = KafkaConsumer(
         topic,
         group_id=f"peek-{uuid.uuid4()}",

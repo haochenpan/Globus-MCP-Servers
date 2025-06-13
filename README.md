@@ -10,7 +10,6 @@ This repository contains MCP servers that allow AI assistants to interact with s
 2. **Compute Facility MCP Servers** - Enable interaction with ALCF and NERSC supercomputing facilities
 3. **Diaspora MCP Server** - Enables interaction with the Diaspora Event Fabric (Octopus) for topic management and event streaming.
 
-
 These servers implement the [Model Context Protocol (MCP)](https://github.com/anthropics/anthropic-cookbook/tree/main/mcp), which allows AI assistants like Claude to interact with external tools and services.
 
 ## Components
@@ -37,8 +36,8 @@ The Compute Facility MCP servers enable AI assistants to:
 
 The Diaspora MCP server enable AI assistants to:
 
-- Create, list, and delete Kafka topics owned by the user  
-- Publish UTF‑8 messages and retrieve the latest event from a topic 
+- **Manage topics** - Create, list, and delete topics within the user’s namespace
+- **Stream events** - Publish events to a topic and retrieve the most recent event
 
 [Learn more about the Diaspora MCP Server](mcps/diaspora/README.md)
 
@@ -88,7 +87,7 @@ To add these MCP servers to Claude Desktop:
 For detailed configuration instructions, see the README files for each component:
 - [Globus MCP Servers Setup](mcps/globus/README.md#setting-up-mcp-servers-in-claude-desktop)
 - [Compute Facility MCP Servers Setup](mcps/compute-facilities/READEME.md#setting-up-mcp-servers-in-claude-desktop)
-- [Diaspora MCP Server Setup](mcps/diaspora/README.md#setting-up-mcp-servers-in-claude-desktop)
+- [Diaspora MCP Server Setup](mcps/diaspora/README.md#setting-up-the-mcp-server-in-claude-desktop)
 
 ## Usage Examples
 
@@ -124,7 +123,7 @@ Check the status of NERSC systems
 
 You can ask Claude to:
 ```
-register a topic namespace, send three messages, and receive the latest message
+register a topic, produce three messages, and receive the latest message
 ```
 
 ## Available Tools
@@ -154,7 +153,7 @@ register a topic namespace, send three messages, and receive the latest message
 
 ### Diaspora Event Fabric Tools
 - `register_topic` – create a new Kafka topic  
-- `send_event` – publish a UTF‑8 message to a topic  
+- `produce_event` – publish a UTF‑8 message to a topic  
 - `consume_latest_event` – fetch the most recent event from a topic
 - And more...
 
