@@ -8,6 +8,7 @@ This repository contains MCP servers that allow AI assistants to interact with s
 
 1. **Globus MCP Servers** - Enable interaction with Globus services for data transfer and compute functions
 2. **Compute Facility MCP Servers** - Enable interaction with ALCF and NERSC supercomputing facilities
+3. **Diaspora MCP Server** - Enables interaction with the Diaspora Event Fabric (Octopus) for topic management and event streaming.
 
 These servers implement the [Model Context Protocol (MCP)](https://github.com/anthropics/anthropic-cookbook/tree/main/mcp), which allows AI assistants like Claude to interact with external tools and services.
 
@@ -30,6 +31,15 @@ The Compute Facility MCP servers enable AI assistants to:
 - **NERSC** - Check status of NERSC systems and services
 
 [Learn more about Compute Facility MCP Servers](mcps/compute-facilities/READEME.md)
+
+### Diaspora MCP Server
+
+The Diaspora MCP server enable AI assistants to:
+
+- **Manage topics** - Create, list, and delete topics within the user’s namespace
+- **Stream events** - Publish events to a topic and retrieve the most recent event
+
+[Learn more about the Diaspora MCP Server](mcps/diaspora/README.md)
 
 ## Prerequisites
 
@@ -58,6 +68,9 @@ The Compute Facility MCP servers enable AI assistants to:
    
    # For Compute Facility servers
    pip install -r mcps/compute-facilities/requirements.txt
+
+   # For Diaspora server
+   pip install -r mcps/diaspora/requirements.txt
    ```
 
 ## Setting up MCP Servers in Claude Desktop
@@ -73,6 +86,7 @@ To add these MCP servers to Claude Desktop:
 For detailed configuration instructions, see the README files for each component:
 - [Globus MCP Servers Setup](mcps/globus/README.md#setting-up-mcp-servers-in-claude-desktop)
 - [Compute Facility MCP Servers Setup](mcps/compute-facilities/READEME.md#setting-up-mcp-servers-in-claude-desktop)
+- [Diaspora MCP Server Setup](mcps/diaspora/README.md#setting-up-the-mcp-server-in-claude-desktop)
 
 ## Usage Examples
 
@@ -104,6 +118,13 @@ You can ask Claude to:
 Check the status of NERSC systems
 ```
 
+### Diaspora Event Fabric
+
+You can ask Claude to:
+```
+Register a Diaspora topic, produce three messages, and consume the latest message
+```
+
 ## Available Tools
 
 ### Globus Transfer Server Tools
@@ -128,6 +149,12 @@ Check the status of NERSC systems
 - `get_nersc_status` - Get the status of various NERSC services
 - `check_system_availability` - Check the system's current availability
 - `get_maintenance_info` - Check the maintenance schedule of the resources
+
+### Diaspora Event Fabric Tools
+- `register_topic` – create a new Kafka topic  
+- `produce_event` – publish a UTF‑8 message to a topic  
+- `consume_latest_event` – fetch the most recent event from a topic
+- And more...
 
 For a complete list of tools, see the README files for each component.
 
