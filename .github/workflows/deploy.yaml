@@ -8,10 +8,15 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # These permissions are needed to interact with GitHub's OIDC Token endpoint.
+    permissions:
+      id-token: write
+      contents: read
     env:
       AWS_REGION: us-east-1
       SERVICE: science-mcps-diaspora
       CONTAINER: fastmcp
+      CONTAINER_PATH: mcps/diaspora/Dockerfile
       PORT: 8000
 
     steps:
@@ -21,19 +26,29 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::423623835312:role/github-action-role
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Install Lightsail CLI plugin
+      - name: Delete old Docker images
         run: |
-          curl -fsSL "https://s3.us-west-2.amazonaws.com/lightsailctl/latest/linux-amd64/lightsailctl" \
-            -o /usr/local/bin/lightsailctl
-          chmod +x /usr/local/bin/lightsailctl
+          output=$(aws lightsail get-container-images --region $AWS_REGION --service-name $SERVICE --no-paginate --output text)
+          container_names=($(echo "$output" | awk '{print $NF}'))
+          for name in "${container_names[@]:1}"; do
+            echo "IMAGE TO DELETE $name"
+            aws lightsail delete-container-image --region $AWS_REGION --service-name $SERVICE --image "$name" || true
+          done
 
       - name: Build Docker image
         run: |
-          docker build --platform=linux/amd64 -t $SERVICE .
+          docker build --platform=linux/amd64 -t $SERVICE -f $CONTAINER_PATH .
+
+      - name: Install Lightsail plugin prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl
+          curl -fsSL "https://s3.us-west-2.amazonaws.com/lightsailctl/latest/linux-amd64/lightsailctl" \
+            | sudo tee /usr/local/bin/lightsailctl >/dev/null
+          sudo chmod +x /usr/local/bin/lightsailctl
 
       - name: Ensure Lightsail service exists
         run: |
@@ -44,22 +59,23 @@ jobs:
             --scale 1 \
             || true
 
-      - name: Push & capture image URI
-        id: push
+      - name: Push image to Lightsail
         run: |
-          IMAGE_URI=$(aws lightsail push-container-image \
+            aws lightsail push-container-image \
             --region $AWS_REGION \
             --service-name $SERVICE \
             --label $CONTAINER \
-            --image $SERVICE \
-            --query 'containerImage.image' \
-            --output text)
-          echo "::set-output name=image::$IMAGE_URI"
+            --image $SERVICE  
 
       - name: Deploy to Lightsail
         run: |
-          aws lightsail create-container-service-deployment \
+            # Lightsail expects the image reference with leading colon:
+            IMAGE_NAME=":${SERVICE}.${CONTAINER}.latest"
+
+            aws lightsail create-container-service-deployment \
             --region $AWS_REGION \
             --service-name $SERVICE \
-            --containers "{\"${CONTAINER}\":{\"image\":\"${{ steps.push.outputs.image }}\",\"ports\":{\"\"${PORT}\"\":\"HTTP\"}}}" \
-            --public-endpoint "{\"containerName\":\"${CONTAINER}\",\"containerPort\":${PORT}}"
+            --containers \
+                "{\"${CONTAINER}\": {\"image\": \"${IMAGE_NAME}\", \"ports\": {\"${PORT}\": \"HTTP\"}}}" \
+            --public-endpoint \
+                "{\"containerName\": \"${CONTAINER}\", \"containerPort\": ${PORT}}"
