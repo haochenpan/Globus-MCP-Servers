@@ -1,0 +1,65 @@
+name: Deploy Diaspora MCP
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: us-east-1
+      SERVICE: science-mcps-diaspora
+      CONTAINER: fastmcp
+      PORT: 8000
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Install Lightsail CLI plugin
+        run: |
+          curl -fsSL "https://s3.us-west-2.amazonaws.com/lightsailctl/latest/linux-amd64/lightsailctl" \
+            -o /usr/local/bin/lightsailctl
+          chmod +x /usr/local/bin/lightsailctl
+
+      - name: Build Docker image
+        run: |
+          docker build --platform=linux/amd64 -t $SERVICE .
+
+      - name: Ensure Lightsail service exists
+        run: |
+          aws lightsail create-container-service \
+            --region $AWS_REGION \
+            --service-name $SERVICE \
+            --power micro \
+            --scale 1 \
+            || true
+
+      - name: Push & capture image URI
+        id: push
+        run: |
+          IMAGE_URI=$(aws lightsail push-container-image \
+            --region $AWS_REGION \
+            --service-name $SERVICE \
+            --label $CONTAINER \
+            --image $SERVICE \
+            --query 'containerImage.image' \
+            --output text)
+          echo "::set-output name=image::$IMAGE_URI"
+
+      - name: Deploy to Lightsail
+        run: |
+          aws lightsail create-container-service-deployment \
+            --region $AWS_REGION \
+            --service-name $SERVICE \
+            --containers "{\"${CONTAINER}\":{\"image\":\"${{ steps.push.outputs.image }}\",\"ports\":{\"\"${PORT}\"\":\"HTTP\"}}}" \
+            --public-endpoint "{\"containerName\":\"${CONTAINER}\",\"containerPort\":${PORT}}"
