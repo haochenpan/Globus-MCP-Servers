@@ -15,14 +15,14 @@ jobs:
             service: science-mcps-diaspora
             container_path: mcps/diaspora/Dockerfile
             port: 8000
-          # - server_name: compute  # compute_server.py
-          #   service: science-mcps-compute
-          #   container_path: mcps/globus/Dockerfile
-          #   port: 8000
-          # - server_name: transfer  # transfer_server.py
-          #   service: science-mcps-transfer
-          #   container_path: mcps/globus/Dockerfile
-          #   port: 8000
+          - server_name: compute  # compute_server.py
+            service: science-mcps-compute
+            container_path: mcps/globus/Dockerfile
+            port: 8000
+          - server_name: transfer  # transfer_server.py
+            service: science-mcps-transfer
+            container_path: mcps/globus/Dockerfile
+            port: 8000
     permissions:
       id-token: write
       contents: read
