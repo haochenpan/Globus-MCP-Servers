@@ -49,22 +49,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y jq
 
-      - name: Delete old Docker images
-        run: |
-          output=$(aws lightsail get-container-images \
-            --region $AWS_REGION \
-            --service-name $SERVICE \
-            --no-paginate \
-            --output text)
-          container_names=($(echo "$output" | awk '{print $NF}'))
-          for name in "${container_names[@]:1}"; do
-            echo "IMAGE TO DELETE: $name"
-            aws lightsail delete-container-image \
-              --region $AWS_REGION \
-              --service-name $SERVICE \
-              --image "$name" || true
-          done
-
       - name: Build Docker image
         run: |
           docker build --platform=linux/amd64 \
@@ -86,6 +70,22 @@ jobs:
             --service-name $SERVICE \
             --power micro \
             --scale 1 || true
+
+      - name: Delete old Docker images
+        run: |
+          output=$(aws lightsail get-container-images \
+            --region $AWS_REGION \
+            --service-name $SERVICE \
+            --no-paginate \
+            --output text)
+          container_names=($(echo "$output" | awk '{print $NF}'))
+          for name in "${container_names[@]:1}"; do
+            echo "IMAGE TO DELETE: $name"
+            aws lightsail delete-container-image \
+              --region $AWS_REGION \
+              --service-name $SERVICE \
+              --image "$name" || true
+          done
 
       - name: Push image to Lightsail
         run: |
